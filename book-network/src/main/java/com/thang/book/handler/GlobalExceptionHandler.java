@@ -1,5 +1,6 @@
 package com.thang.book.handler;
 
+import com.thang.book.exception.OperationNotPremittedException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -53,6 +54,28 @@ public class GlobalExceptionHandler {
                                 .businessErrorCode(BAD_CREDENTIALS.getCode())
                                 .businessErrorDescription(BAD_CREDENTIALS.getDes())
                                 .error(BAD_CREDENTIALS.getDes())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ExceptionResponse> handleException(MessagingException exp) {
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(OperationNotPremittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPremittedException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
                                 .build()
                 );
     }

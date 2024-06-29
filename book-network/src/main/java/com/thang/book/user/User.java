@@ -1,6 +1,8 @@
 package com.thang.book.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thang.book.book.Book;
+import com.thang.book.history.BookTransactionHistory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -44,6 +46,8 @@ public class User implements UserDetails, Principal {
     private boolean accountLocked;
     private boolean enabled;
 
+
+
     // create thì thêm mới còn thay đổi thì thay đổi trên bảng đấy luôn đỡ tốn thêm bản ghi
 
     @CreatedDate
@@ -62,7 +66,16 @@ public class User implements UserDetails, Principal {
     // nên là each user sẽ có 1 list role
     @ManyToMany(fetch = FetchType.EAGER)
     @JsonIgnore
-     private List<Role> roles;
+    private List<Role> roles;
+
+    // one user to many book
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
+
+    // list Transaction
+    @OneToMany(mappedBy = "user")
+    private List<BookTransactionHistory> historyList;
+
 
     // chuyển role thành đối tượng SimpleGrantedAuthority
     // r ỏ đây là 1 Role vì có getter rồi
