@@ -5,10 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface BookTransactionHistoryRepository extends JpaRepository<BookTransactionHistory, Integer> {
 
     @Query("""
@@ -16,7 +19,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
         from BookTransactionHistory history 
         WHERE history.user.id = :userId
 """)
-    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, Integer userId);
+    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, @Param("userId") Integer userId);
 
 
     @Query("""
@@ -24,7 +27,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
         from BookTransactionHistory history 
         WHERE history.book.owner.id = :userId 
 """)
-    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, Integer userId);
+    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable,@Param("userId") Integer userId);
 
 
     @Query("""
@@ -35,18 +38,18 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
         AND history.user.id = :userId
         AND history.returnApproved= false 
 """)
-    boolean isAlreadyBorrowedByUser(Integer bookId, Integer userId);
+    boolean isAlreadyBorrowedByUser(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
 
 
     @Query("""
         SELECT transaction
-        from BookTransactionHistory transaction 
+        from BookTransactionHistory transaction
         WHERE transaction.book.id = :bookId
         AND transaction.user.id = :userId
         AND transaction.returned = false 
         AND transaction.returnApproved= false 
 """)
-    Optional<BookTransactionHistory> findAllByBookIdAndUserId(Integer bookId, Integer id);
+    Optional<BookTransactionHistory> findAllByBookIdAndUserId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
 
 
     @Query("""
@@ -57,5 +60,5 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
         AND transaction.returned = true 
         AND transaction.returnApproved= false 
 """)
-    Optional<BookTransactionHistory> findAllByBookIdAndOwnerId(Integer bookId, Integer id);
+    Optional<BookTransactionHistory> findAllByBookIdAndOwnerId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
 }
